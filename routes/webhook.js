@@ -6,6 +6,7 @@ const VERIFY_TOKEN = process.env.VERIFY_TOKEN;
 const CLIENT_ID = process.env.CLIENT_ID;
 const CLIENT_SECRET = process.env.CLIENT_SECRET;
 const CALLBACK_URL = process.env.CALLBACK_URL;
+const RESPONSE_TEXT = process.env.RESPONSE_TEXT;
 
 // Endpoint para verificação do webhook
 router.get('/webhook-messenger', (req, res) => {
@@ -25,13 +26,39 @@ router.get('/webhook-messenger', (req, res) => {
 
 // Endpoint para receber callbacks do webhook
 router.post('/webhook-messenger', async (req, res) => {
+    const fetch = (await import('node-fetch')).default;
     const body = req.body;
 
     if (body.object === 'page') {
-        body.entry.forEach(entry => {
+        body.entry.forEach(async entry => {
             const webhookEvent = entry.messaging[0];
             console.log(webhookEvent);
-            // Aqui você pode processar o evento recebido
+
+            const senderId = webhookEvent.sender.id;
+            const pageId = webhookEvent.recipient.id;
+
+            const pageData = await fetch(`https://graph.facebook.com/v20.0/${pageId}?fields=access_token&access_token=${APP_ACCESS_TOKEN}`);
+            const pageJson = await pageData.json();
+            const pageAccessToken = pageJson.access_token;
+
+            const response = {
+                recipient: { id: senderId },
+                messaging_type: 'RESPONSE',
+                message: { text: RESPONSE_TEXT }
+            };
+
+            await fetch(`https://graph.facebook.com/v20.0/me/messages`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    recipient: { id: senderId },
+                    messaging_type: 'RESPONSE',
+                    message: { text: RESPONSE_TEXT },
+                    access_token: pageAccessToken
+                })
+            });
         });
         res.status(200).send('EVENT_RECEIVED');
     } else {
