@@ -31,34 +31,30 @@ router.post('/webhook-messenger', async (req, res) => {
 
     if (body.object === 'page') {
         body.entry.forEach(async entry => {
-            const webhookEvent = entry.messaging[0];
-            console.log(webhookEvent);
+            if (entry.messaging && entry.messaging[0]) {
+                const webhookEvent = entry.messaging[0];
+                console.log(webhookEvent);
 
-            const senderId = webhookEvent.sender.id;
-            const pageId = webhookEvent.recipient.id;
+                const senderId = webhookEvent.sender.id;
+                const pageId = webhookEvent.recipient.id;
 
-            const pageData = await fetch(`https://graph.facebook.com/v20.0/${pageId}?fields=access_token&access_token=${APP_ACCESS_TOKEN}`);
-            const pageJson = await pageData.json();
-            const pageAccessToken = pageJson.access_token;
+                const pageData = await fetch(`https://graph.facebook.com/v20.0/${pageId}?fields=access_token&access_token=${APP_ACCESS_TOKEN}`);
+                const pageJson = await pageData.json();
+                const pageAccessToken = pageJson.access_token;
 
-            const response = {
-                recipient: { id: senderId },
-                messaging_type: 'RESPONSE',
-                message: { text: RESPONSE_TEXT }
-            };
-
-            await fetch(`https://graph.facebook.com/v20.0/me/messages`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    recipient: { id: senderId },
-                    messaging_type: 'RESPONSE',
-                    message: { text: RESPONSE_TEXT },
-                    access_token: pageAccessToken
-                })
-            });
+                await fetch(`https://graph.facebook.com/v20.0/me/messages`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        recipient: { id: senderId },
+                        messaging_type: 'RESPONSE',
+                        message: { text: RESPONSE_TEXT },
+                        access_token: pageAccessToken
+                    })
+                });
+            }
         });
         res.status(200).send('EVENT_RECEIVED');
     } else {
