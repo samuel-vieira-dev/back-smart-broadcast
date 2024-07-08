@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const broadcastController = require('../controllers/broadcastController');
 
 const APP_ACCESS_TOKEN = process.env.APP_ACCESS_TOKEN;
 const VERIFY_TOKEN = process.env.VERIFY_TOKEN;
@@ -9,7 +10,7 @@ const CALLBACK_URL = process.env.CALLBACK_URL;
 const RESPONSE_TEXT = process.env.RESPONSE_TEXT;
 
 // Endpoint para verificação do webhook
-router.get('/webhook-messenger', (req, res) => {
+router.get('/webhook', (req, res) => {
     const mode = req.query['hub.mode'];
     const token = req.query['hub.verify_token'];
     const challenge = req.query['hub.challenge'];
@@ -25,7 +26,7 @@ router.get('/webhook-messenger', (req, res) => {
 });
 
 // Endpoint para receber callbacks do webhook
-router.post('/webhook-messenger', async (req, res) => {
+router.post('/webhook', async (req, res) => {
     const fetch = (await import('node-fetch')).default;
     const body = req.body;
 
@@ -126,5 +127,7 @@ router.get('/setup-webhooks', async (req, res) => {
         res.status(500).send('Internal server error');
     }
 });
+
+router.post('/broadcast/send', broadcastController.sendBroadcast);
 
 module.exports = router;

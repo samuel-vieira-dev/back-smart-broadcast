@@ -5,10 +5,10 @@ require('dotenv').config();
 const app = express();
 app.use(bodyParser.json());
 
-const webhookRoutes = require('./routes/webhook');
-app.use('/webhook', webhookRoutes);
+const indexRoutes = require('./routes/index');
+app.use('/', indexRoutes);
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3030;
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
