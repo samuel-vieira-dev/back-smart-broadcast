@@ -7,7 +7,7 @@ const register = async (req, res) => {
 
   try {
     // Verifica se o email já está registrado
-    const userExists = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+    const userExists = await pool.query('SELECT * FROM usersBroadcast WHERE email = $1', [email]);
     if (userExists.rows.length > 0) {
       return res.status(400).json({ error: 'Email already registered' });
     }
@@ -17,7 +17,7 @@ const register = async (req, res) => {
 
     // Inserção do usuário no banco de dados
     const result = await pool.query(
-      'INSERT INTO users (name, email, password, app_access_token, app_client_id, app_secret_key, webhook_token, webhook_url) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id',
+      'INSERT INTO usersBroadcast (name, email, password, app_access_token, app_client_id, app_secret_key, webhook_token, webhook_url) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id',
       [name, email, hashedPassword, app_access_token, app_client_id, app_secret_key, webhook_token, webhook_url]
     );
 
@@ -33,7 +33,7 @@ const login = async (req, res) => {
 
   try {
     // Busca o usuário pelo email
-    const result = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+    const result = await pool.query('SELECT * FROM usersBroadcast WHERE email = $1', [email]);
     if (result.rows.length === 0) {
       return res.status(400).json({ error: 'Invalid credentials' });
     }
