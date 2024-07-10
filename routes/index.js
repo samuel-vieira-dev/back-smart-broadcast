@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const authController = require('../controllers/authController');
 const broadcastController = require('../controllers/broadcastController');
 
 const APP_ACCESS_TOKEN = process.env.APP_ACCESS_TOKEN;
@@ -128,6 +129,11 @@ router.get('/setup-webhooks', async (req, res) => {
     }
 });
 
+// Endpoint que faz envio de broadcast no messenger
 router.post('/broadcast/send', broadcastController.sendBroadcast);
+
+// Auth routes
+router.post('/api/register', authController.register);
+router.post('/api/login', authController.login);
 
 module.exports = router;
