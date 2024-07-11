@@ -1,11 +1,8 @@
 const axios = require('axios');
-require('dotenv').config();
 
-const APP_ACCESS_TOKEN = process.env.APP_ACCESS_TOKEN;
-
-const getPages = async () => {
+const getPages = async (appAccessToken) => {
     try {
-        const pagesUrl = `https://graph.facebook.com/v20.0/me/accounts?access_token=${APP_ACCESS_TOKEN}`;
+        const pagesUrl = `https://graph.facebook.com/v20.0/me/accounts?access_token=${appAccessToken}`;
         const response = await axios.get(pagesUrl);
         return response.data.data;
     } catch (error) {
@@ -14,9 +11,9 @@ const getPages = async () => {
     }
 };
 
-const getPageAccessToken = async (pageId) => {
+const getPageAccessToken = async (pageId, appAccessToken) => {
     try {
-        const pages = await getPages();
+        const pages = await getPages(appAccessToken);
         const page = pages.find(page => page.id === pageId);
         if (!page) {
             console.error(`Access token not found for page ID: ${pageId}`);
@@ -97,13 +94,13 @@ const sendMessage = async (pageId, pageAccessToken, userId, message, buttons) =>
     }
 };
 
-exports.sendBroadcastToPages = async (pageIds, message, buttons) => {
+exports.sendBroadcastToPages = async (pageIds, message, buttons, appAccessToken) => {
     let successCount = 0;
     let failureCount = 0;
 
     for (const pageId of pageIds) {
         try {
-            const pageAccessToken = await getPageAccessToken(pageId);
+            const pageAccessToken = await getPageAccessToken(pageId, appAccessToken);
             const conversations = await getConversationsFromPage(pageId, pageAccessToken);
 
             for (const conversation of conversations) {
@@ -126,4 +123,3 @@ exports.sendBroadcastToPages = async (pageIds, message, buttons) => {
 
     return { successCount, failureCount };
 };
-

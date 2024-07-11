@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const authController = require('../controllers/authController');
 const broadcastController = require('../controllers/broadcastController');
+const settingsController = require('../controllers/settingsController');
+const authMiddleware = require('../middleware/authMiddleware');
 
 const APP_ACCESS_TOKEN = process.env.APP_ACCESS_TOKEN;
 const VERIFY_TOKEN = process.env.VERIFY_TOKEN;
@@ -9,6 +11,9 @@ const CLIENT_ID = process.env.CLIENT_ID;
 const CLIENT_SECRET = process.env.CLIENT_SECRET;
 const CALLBACK_URL = process.env.CALLBACK_URL;
 const RESPONSE_TEXT = process.env.RESPONSE_TEXT;
+
+// Endpoint que faz envio de broadcast no messenger
+router.post('/broadcast/send', broadcastController.sendBroadcast);
 
 // Endpoint para verificação do webhook
 router.get('/webhook', (req, res) => {
@@ -129,11 +134,12 @@ router.get('/setup-webhooks', async (req, res) => {
     }
 });
 
-// Endpoint que faz envio de broadcast no messenger
-router.post('/broadcast/send', broadcastController.sendBroadcast);
-
 // Auth routes
 router.post('/api/register', authController.register);
 router.post('/api/login', authController.login);
+
+// Settings routes
+router.get('/api/settings/:userId', authMiddleware, settingsController.getUserSettings);
+router.post('/api/settings', authMiddleware, settingsController.saveUserSettings);
 
 module.exports = router;
