@@ -42,7 +42,7 @@ router.post('/webhook', async (req, res) => {
         body.entry.forEach(async entry => {
             if (entry.messaging && entry.messaging[0]) {
                 const webhookEvent = entry.messaging[0];
-                console.log(webhookEvent);
+                console.log('Webhook Event:', webhookEvent);
 
                 const senderId = webhookEvent.sender.id;
                 const pageId = webhookEvent.recipient.id;
@@ -53,21 +53,27 @@ router.post('/webhook', async (req, res) => {
                     const pageJson = await pageData.json();
                     const pageAccessToken = pageJson.access_token;
 
-                    await fetch(`https://graph.facebook.com/v20.0/me/messages`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            recipient: { id: senderId },
-                            messaging_type: 'RESPONSE',
-                            message: { text: RESPONSE_TEXT },
-                            access_token: pageAccessToken
-                        })
-                    });
+                    try {
+                        const response = await fetch(`https://graph.facebook.com/v20.0/me/messages`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                recipient: { id: senderId },
+                                messaging_type: 'RESPONSE',
+                                message: { text: RESPONSE_TEXT },
+                                access_token: pageAccessToken
+                            })
+                        });
+                        const responseData = await response.json();
+                        console.log('Message Response:', responseData);
 
-                    // Marca o usuário como tendo recebido a mensagem inicial
-                    userState[senderId] = true;
+                        // Marca o usuário como tendo recebido a mensagem inicial
+                        userState[senderId] = true;
+                    } catch (error) {
+                        console.error('Error sending message:', error);
+                    }
                 }
             }
         });
