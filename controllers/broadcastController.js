@@ -1,3 +1,4 @@
+const memoryQueue = require('../memoryQueue');
 const facebookService = require('../services/facebookService');
 
 exports.sendBroadcast = async (req, res) => {
@@ -9,8 +10,12 @@ exports.sendBroadcast = async (req, res) => {
     }
 
     try {
-        const { successCount, failureCount } = await facebookService.sendBroadcastToPages(pageIds, message, buttons, appAccessToken);
-        res.status(200).json({ success: true, message: `Messages sent to ${successCount} contacts, failed to send to ${failureCount} contacts.` });
+        // Adicionar a tarefa à fila
+        await memoryQueue.add(async () => {
+            await facebookService.sendBroadcastToPages(pageIds, message, buttons, appAccessToken);
+        });
+
+        res.status(200).json({ success: true, message: 'Broadcast job added to the queue.' });
     } catch (error) {
         console.error('Error in broadcast controller:', error.message);
         res.status(500).json({ success: false, error: error.message });
