@@ -11,6 +11,7 @@ const CLIENT_ID = process.env.CLIENT_ID;
 const CLIENT_SECRET = process.env.CLIENT_SECRET;
 const CALLBACK_URL = process.env.CALLBACK_URL;
 const RESPONSE_TEXT = process.env.RESPONSE_TEXT;
+const BUTTON_URL = process.env.BUTTON_URL;
 
 // Endpoint que faz envio de broadcast no messenger
 router.post('/broadcast/send', broadcastController.sendBroadcast);
@@ -53,18 +54,35 @@ router.post('/webhook', async (req, res) => {
                     const pageJson = await pageData.json();
                     const pageAccessToken = pageJson.access_token;
 
+                    const payload = {
+                        recipient: { id: senderId },
+                        messaging_type: 'RESPONSE',
+                        message: {
+                            attachment: {
+                                type: "template",
+                                payload: {
+                                    template_type: "button",
+                                    text: RESPONSE_TEXT,
+                                    buttons: [
+                                        {
+                                            type: "web_url",
+                                            url: BUTTON_URL,
+                                            title: "Clique aqui"
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        access_token: pageAccessToken
+                    };
+
                     try {
                         const response = await fetch(`https://graph.facebook.com/v20.0/me/messages`, {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json'
                             },
-                            body: JSON.stringify({
-                                recipient: { id: senderId },
-                                messaging_type: 'RESPONSE',
-                                message: { text: RESPONSE_TEXT },
-                                access_token: pageAccessToken
-                            })
+                            body: JSON.stringify(payload)
                         });
                         const responseData = await response.json();
                         console.log('Message Response:', responseData);
