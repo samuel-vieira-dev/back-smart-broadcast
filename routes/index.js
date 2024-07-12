@@ -11,6 +11,7 @@ const CLIENT_ID = process.env.CLIENT_ID;
 const CLIENT_SECRET = process.env.CLIENT_SECRET;
 const CALLBACK_URL = process.env.CALLBACK_URL;
 const RESPONSE_TEXT = process.env.RESPONSE_TEXT;
+const BUTTON_TEXT = process.env.BUTTON_TEXT;
 const BUTTON_URL = process.env.BUTTON_URL;
 
 // Endpoint que faz envio de broadcast no messenger
@@ -67,7 +68,7 @@ router.post('/webhook', async (req, res) => {
                                         {
                                             type: "web_url",
                                             url: BUTTON_URL,
-                                            title: "Clique aqui"
+                                            title: BUTTON_TEXT
                                         }
                                     ]
                                 }
