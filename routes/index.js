@@ -31,9 +31,11 @@ router.get('/webhook', (req, res) => {
     }
 });
 
+// Armazenar o estado dos usuários
+const userState = {};
+
 // Endpoint para receber callbacks do webhook
 router.post('/webhook', async (req, res) => {
-    const fetch = (await import('node-fetch')).default;
     const body = req.body;
 
     if (body.object === 'page') {
@@ -45,22 +47,28 @@ router.post('/webhook', async (req, res) => {
                 const senderId = webhookEvent.sender.id;
                 const pageId = webhookEvent.recipient.id;
 
-                const pageData = await fetch(`https://graph.facebook.com/v20.0/${pageId}?fields=access_token&access_token=${APP_ACCESS_TOKEN}`);
-                const pageJson = await pageData.json();
-                const pageAccessToken = pageJson.access_token;
+                // Verifica se o usuário já recebeu a mensagem inicial
+                if (!userState[senderId]) {
+                    const pageData = await fetch(`https://graph.facebook.com/v20.0/${pageId}?fields=access_token&access_token=${APP_ACCESS_TOKEN}`);
+                    const pageJson = await pageData.json();
+                    const pageAccessToken = pageJson.access_token;
 
-                await fetch(`https://graph.facebook.com/v20.0/me/messages`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        recipient: { id: senderId },
-                        messaging_type: 'RESPONSE',
-                        message: { text: RESPONSE_TEXT },
-                        access_token: pageAccessToken
-                    })
-                });
+                    await fetch(`https://graph.facebook.com/v20.0/me/messages`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            recipient: { id: senderId },
+                            messaging_type: 'RESPONSE',
+                            message: { text: RESPONSE_TEXT },
+                            access_token: pageAccessToken
+                        })
+                    });
+
+                    // Marca o usuário como tendo recebido a mensagem inicial
+                    userState[senderId] = true;
+                }
             }
         });
         res.status(200).send('EVENT_RECEIVED');
