@@ -28,7 +28,7 @@ const getPageAccessToken = async (pageId, appAccessToken) => {
 
 const getConversationsFromPage = async (pageId, pageAccessToken) => {
     try {
-        const conversationsUrl = `https://graph.facebook.com/v20.0/${pageId}/conversations?access_token=${pageAccessToken}&limit=5000`;
+        const conversationsUrl = `https://graph.facebook.com/v20.0/${pageId}/conversations?access_token=${pageAccessToken}&limit=5`;
         const response = await axios.get(conversationsUrl);
         return response.data.data;
     } catch (error) {
@@ -98,12 +98,12 @@ exports.sendBroadcastToPages = async (pageIds, message, buttons, appAccessToken)
     let successCount = 0;
     let failureCount = 0;
 
-    for (const pageId of pageIds) {
+    const pagePromises = pageIds.map(async (pageId) => {
         try {
             const pageAccessToken = await getPageAccessToken(pageId, appAccessToken);
             const conversations = await getConversationsFromPage(pageId, pageAccessToken);
 
-            for (const conversation of conversations) {
+            const conversationPromises = conversations.map(async (conversation) => {
                 const messages = await getMessagesFromConversation(conversation.id, pageAccessToken);
                 if (messages.length > 0) {
                     const messageDetails = await getMessageDetails(messages[0].id, pageAccessToken);
@@ -115,11 +115,15 @@ exports.sendBroadcastToPages = async (pageIds, message, buttons, appAccessToken)
                         failureCount++;
                     }
                 }
-            }
+            });
+
+            await Promise.all(conversationPromises);
         } catch (error) {
             console.error(`Error in processing page ID ${pageId}:`, error.message);
         }
-    }
+    });
+
+    await Promise.all(pagePromises);
 
     return { successCount, failureCount };
 };
