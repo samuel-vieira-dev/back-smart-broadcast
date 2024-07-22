@@ -28,7 +28,7 @@ const getPageAccessToken = async (pageId, appAccessToken) => {
 
 const getConversationsFromPage = async (pageId, pageAccessToken) => {
     try {
-        const conversationsUrl = `https://graph.facebook.com/v20.0/${pageId}/conversations?access_token=${pageAccessToken}&limit=5000`;
+        const conversationsUrl = `https://graph.facebook.com/v20.0/${pageId}/conversations?access_token=${pageAccessToken}&limit=5`;
         const response = await axios.get(conversationsUrl);
         return response.data.data;
     } catch (error) {
