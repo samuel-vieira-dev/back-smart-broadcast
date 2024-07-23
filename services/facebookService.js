@@ -108,6 +108,8 @@ exports.sendBroadcastToPages = async (pageIds, message, buttons, appAccessToken)
                 if (messages.length > 0) {
                     const messageDetails = await getMessageDetails(messages[0].id, pageAccessToken);
                     const userId = messageDetails.from.id !== pageId ? messageDetails.from.id : messageDetails.to.data[0].id;
+                    const username = messageDetails.from.id !== pageId ? messageDetails.from.name : messageDetails.to.data[0].name;
+                    console.log(`==USERNAME: ${username} ==`)
                     try {
                         await sendMessage(pageId, pageAccessToken, userId, message, buttons);
                         successCount++;
