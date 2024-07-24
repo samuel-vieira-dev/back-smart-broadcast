@@ -28,7 +28,7 @@ const getPageAccessToken = async (pageId, appAccessToken) => {
 
 const getConversationsFromPage = async (pageId, pageAccessToken) => {
     try {
-        const conversationsUrl = `https://graph.facebook.com/v20.0/${pageId}/conversations?access_token=${pageAccessToken}&limit=5000`;
+        const conversationsUrl = `https://graph.facebook.com/v20.0/${pageId}/conversations?access_token=${pageAccessToken}&limit=5`;
         const response = await axios.get(conversationsUrl);
         return response.data.data;
     } catch (error) {
@@ -108,8 +108,20 @@ exports.sendBroadcastToPages = async (pageIds, message, buttons, appAccessToken)
                 if (messages.length > 0) {
                     const messageDetails = await getMessageDetails(messages[0].id, pageAccessToken);
                     const userId = messageDetails.from.id !== pageId ? messageDetails.from.id : messageDetails.to.data[0].id;
+                    const username = messageDetails.from.id !== pageId ? messageDetails.from.name : messageDetails.to.data[0].name;
+                    let messageFormmated = message;
+                    if (username) {
+                        const [firstName, ...rest] = username.split(' ');
+                        const lastName = rest.pop();
+                        const fullName = username;
+
+                        messageFormmated = messageFormmated
+                            .replace(/{{first_name}}/g, firstName)
+                            .replace(/{{last_name}}/g, lastName)
+                            .replace(/{{full_name}}/g, fullName);
+                    }
                     try {
-                        await sendMessage(pageId, pageAccessToken, userId, message, buttons);
+                        await sendMessage(pageId, pageAccessToken, userId, messageFormmated, buttons);
                         successCount++;
                     } catch (error) {
                         failureCount++;
