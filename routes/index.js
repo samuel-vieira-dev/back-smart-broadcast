@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const authController = require('../controllers/AuthController');
-const broadcastController = require('../controllers/BroadcastController');
-const settingsController = require('../controllers/SettingsController');
-const authMiddleware = require('../middleware/AuthMiddleware');
+const authController = require('../controllers/AuthController.js');
+const broadcastController = require('../controllers/BroadcastController.js');
+const settingsController = require('../controllers/SettingsController.js');
+const authMiddleware = require('../middleware/AuthMiddleware.js');
 
 const APP_ACCESS_TOKEN = process.env.APP_ACCESS_TOKEN;
 const VERIFY_TOKEN = process.env.VERIFY_TOKEN;
