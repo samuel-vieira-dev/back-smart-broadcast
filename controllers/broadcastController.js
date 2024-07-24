@@ -1,4 +1,4 @@
-const memoryQueue = require('../utils/memoryQueue.js');
+const memoryQueue = require('../utils/MemoryQueue.js');
 const facebookService = require('../services/facebookService.js');
 
 exports.sendBroadcast = async (req, res) => {
