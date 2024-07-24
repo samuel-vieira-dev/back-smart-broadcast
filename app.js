@@ -13,4 +13,8 @@ app.use('/', indexRoutes);
 const PORT = process.env.PORT || 3030;
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
+    setInterval(() => {
+        const memoryUsage = process.memoryUsage();
+        console.log(`Memory Usage: RSS = ${memoryUsage.rss}, Heap Total = ${memoryUsage.heapTotal}, Heap Used = ${memoryUsage.heapUsed}`);
+    }, 10000); // Log memory usage every 10 seconds
 });
