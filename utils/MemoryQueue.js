@@ -1,4 +1,4 @@
-class MemoryQueue {
+class memoryQueue {
     constructor() {
         this.queue = [];
         this.processing = false;
@@ -26,4 +26,4 @@ class MemoryQueue {
     }
 }
 
-module.exports = new MemoryQueue();
+module.exports = new memoryQueue();
