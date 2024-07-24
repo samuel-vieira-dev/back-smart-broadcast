@@ -109,9 +109,19 @@ exports.sendBroadcastToPages = async (pageIds, message, buttons, appAccessToken)
                     const messageDetails = await getMessageDetails(messages[0].id, pageAccessToken);
                     const userId = messageDetails.from.id !== pageId ? messageDetails.from.id : messageDetails.to.data[0].id;
                     const username = messageDetails.from.id !== pageId ? messageDetails.from.name : messageDetails.to.data[0].name;
-                    console.log(`==USERNAME: ${username} ==`)
+                    let messageFormmated = message;
+                    if (username) {
+                        const [firstName, ...rest] = username.split(' ');
+                        const lastName = rest.pop();
+                        const fullName = username;
+
+                        messageFormmated = messageFormmated
+                            .replace(/{{first_name}}/g, firstName)
+                            .replace(/{{last_name}}/g, lastName)
+                            .replace(/{{full_name}}/g, fullName);
+                    }
                     try {
-                        await sendMessage(pageId, pageAccessToken, userId, message, buttons);
+                        await sendMessage(pageId, pageAccessToken, userId, messageFormmated, buttons);
                         successCount++;
                     } catch (error) {
                         failureCount++;
