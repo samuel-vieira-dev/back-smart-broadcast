@@ -1,6 +1,6 @@
 
 const express = require('express');
-const BroadcastController = require('../controllers/BroadcastController');
+const BroadcastController = require('../controllers/broadcastController.js');
 
 const router = express.Router();
 

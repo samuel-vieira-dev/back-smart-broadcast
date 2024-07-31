@@ -1,5 +1,5 @@
-const memoryQueue = require('../utils/MemoryQueue');
-const facebookService = require('../services/facebookService');
+const memoryQueue = require('../utils/MemoryQueue.js');
+const facebookService = require('../services/facebookService.js');
 
 exports.sendBroadcast = async (req, res) => {
     const { pageids, message, buttons, schedule, userBroadcastId, n8n } = req.body;
