@@ -2,7 +2,7 @@ const memoryQueue = require('../utils/MemoryQueue');
 const facebookService = require('../services/facebookService');
 
 exports.sendBroadcast = async (req, res) => {
-    const { pageIds, message, buttons } = req.body;
+    const { pageids, message, buttons, schedule, userBroadcastId, n8n } = req.body;
     const appAccessToken = req.headers['app-access-token'];
 
     if (!appAccessToken) {
@@ -12,7 +12,7 @@ exports.sendBroadcast = async (req, res) => {
     try {
         // Adicionar a tarefa à fila
         await memoryQueue.add(async () => {
-            await facebookService.sendBroadcastToPages(pageIds, message, buttons, appAccessToken);
+            await facebookService.sendBroadcastToPages(pageids, message, buttons, appAccessToken, schedule, userBroadcastId, n8n);
         });
 
         res.status(200).json({ success: true, message: 'Broadcast job added to the queue.' });
