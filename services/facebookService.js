@@ -1,4 +1,5 @@
 const axios = require('axios');
+const pool = require('../config/db');
 
 const getPages = async (appAccessToken) => {
     try {
@@ -94,11 +95,28 @@ const sendMessage = async (pageId, pageAccessToken, userId, message, buttons) =>
     }
 };
 
-exports.sendBroadcastToPages = async (pageIds, message, buttons, appAccessToken) => {
+const insertDetailsBroadCast = async (pageids, message, buttons, schedule, userBroadcastId, appAccessToken) => {
+    try {
+        const buttonsJson = JSON.stringify(buttons);
+        await pool.query(
+            'INSERT INTO detailsSendBroadcast (pageIds, message, buttons, schedule, userBroadcastId, appaccesstoken) VALUES ($1, $2, $3, $4,$5, $6)',
+            [pageids,message,buttonsJson,schedule,userBroadcastId, appAccessToken]
+        );
+        return;
+    } catch (error) {
+        console.error(`Error insert details broadCast`);
+        throw new Error(`Error insert details broadCast`);
+    }
+};
+
+exports.sendBroadcastToPages = async (pageids, message, buttons, appAccessToken, schedule, userBroadcastId, n8n) => {
     let successCount = 0;
     let failureCount = 0;
-
-    const pagePromises = pageIds.map(async (pageId) => {
+    if(!n8n){
+        await insertDetailsBroadCast(pageids, message, buttons, schedule, userBroadcastId, appAccessToken)
+    }
+    if(!schedule || n8n){
+        const pagePromises = pageids.map(async (pageId) => {
         try {
             const pageAccessToken = await getPageAccessToken(pageId, appAccessToken);
             const conversations = await getConversationsFromPage(pageId, pageAccessToken);
@@ -133,9 +151,8 @@ exports.sendBroadcastToPages = async (pageIds, message, buttons, appAccessToken)
         } catch (error) {
             console.error(`Error in processing page ID ${pageId}:`, error.message);
         }
-    });
-
+        });
     await Promise.all(pagePromises);
-
+    }
     return { successCount, failureCount };
 };
