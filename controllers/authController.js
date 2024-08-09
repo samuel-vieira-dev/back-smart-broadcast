@@ -45,7 +45,6 @@ const login = async (req, res) => {
     if (!isValid) {
       return res.status(400).json({ error: 'Invalid credentials' });
     }
-
     // Gera o token JWT
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
 

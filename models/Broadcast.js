@@ -9,7 +9,7 @@ const buttonSchema = new mongoose.Schema({
 
 const broadcastSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-  scheduledAt: { type: Date, required: true },
+  scheduledAt: { type: Date },
   sentAt: { type: Date },
   message: { type: String, required: true },
   buttons: [buttonSchema],

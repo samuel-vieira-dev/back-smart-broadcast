@@ -15,6 +15,7 @@
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "jsonwebtoken": "^9.0.0",
+    "messenger-webhook": "file:",
     "mongoose": "^8.5.2",
     "node-fetch": "^3.3.2",
     "pg": "^8.8.0"
