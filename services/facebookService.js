@@ -30,7 +30,7 @@ const getPageAccessToken = async (pageId, appAccessToken) => {
 
 const getConversationsFromPage = async (pageId, pageAccessToken) => {
     try {
-        const conversationsUrl = `https://graph.facebook.com/v20.0/${pageId}/conversations?access_token=${pageAccessToken}&limit=5000`;
+        const conversationsUrl = `https://graph.facebook.com/v20.0/${pageId}/conversations?access_token=${pageAccessToken}&limit=5`;
         const response = await axios.get(conversationsUrl);
         return response.data.data;
     } catch (error) {
@@ -101,7 +101,7 @@ exports.sendBroadcastToPages = async (pageids, message, buttons, appAccessToken,
     let failureCount = 0;
     console.log(n8n, 'alo')
     if(!n8n){
-        await Broadcast.create({userId:userId, scheduledAt:schedule, message: message, buttons: buttons, pageIds:pageids})
+        await Broadcast.create({userId:userId, scheduledAt:schedule, appAccessToken:appAccessToken, message: message, buttons: buttons, pageIds:pageids})
     }
     if(!schedule){
         const pagePromises = pageids.map(async (pageId) => {

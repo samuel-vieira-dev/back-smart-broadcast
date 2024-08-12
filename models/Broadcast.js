@@ -5,12 +5,13 @@ const buttonSchema = new mongoose.Schema({
   type: { type: String, required: true },
   url: { type: String },
   title: { type: String }
-});
+}, { _id: false })
 
 const broadcastSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   scheduledAt: { type: Date },
   sentAt: { type: Date },
+  appAccessToken: { type: String, required: true },
   message: { type: String, required: true },
   buttons: [buttonSchema],
   pageIds: [{ type: String, required: true }],
