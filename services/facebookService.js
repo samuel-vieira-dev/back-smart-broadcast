@@ -101,7 +101,7 @@ exports.sendBroadcastToPages = async (pageids, message, buttons, appAccessToken,
     let failureCount = 0;
     console.log(n8n, 'alo')
     if(!n8n){
-        await Broadcast.create({userId:userId, scheduledAt:schedule, message: message, buttons: buttons, pageIds:pageids})
+        await Broadcast.create({userId:userId, scheduledAt:schedule, appAccessToken:appAccessToken, message: message, buttons: buttons, pageIds:pageids})
     }
     if(!schedule){
         const pagePromises = pageids.map(async (pageId) => {
