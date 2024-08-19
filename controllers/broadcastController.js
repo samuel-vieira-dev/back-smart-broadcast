@@ -1,7 +1,8 @@
 const memoryQueue = require('../utils/MemoryQueue.js');
 const facebookService = require('../services/facebookService.js');
+const Broadcast = require('../models/Broadcast');
 
-exports.sendBroadcast = async (req, res) => {
+const sendBroadcast = async (req, res) => {
     const { pageids, message, buttons, schedule, userId, n8n} = req.body;
     const appAccessToken = req.headers['app-access-token'];
 
@@ -21,3 +22,35 @@ exports.sendBroadcast = async (req, res) => {
         res.status(500).json({ success: false, error: error.message });
     }
 };
+const getDetailsBroad = async (req, res) => {
+    const { userId } = req.params;
+    try {
+      const datailsBroads = await Broadcast.find({ userId }, {
+        scheduledAt: { $ifNull: ["$scheduledAt", "$createdAt"] },
+        _id: 1, 
+        message: 1,
+        createdAt: 1
+      }).sort({ scheduledAt: -1 });
+      if (!datailsBroads) {
+        return res.status(404).json({ error: 'Settings not found' });
+      }
+      const formattedDatailsBroads = datailsBroads.map(broad => ({
+        ...broad._doc,
+        scheduledAt: broad.scheduledAt ? new Date(broad.scheduledAt).toLocaleString('pt-BR', {
+          timeZone: 'America/Sao_Paulo',
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+        }) : null,
+      }));
+      
+      res.json(formattedDatailsBroads);
+    } catch (error) {
+      console.error('Error retrieving user settings:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  };
+
+  module.exports = { getDetailsBroad, sendBroadcast };
