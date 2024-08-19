@@ -1,6 +1,5 @@
 // controllers/settingsController.js
 const UserSettings = require('../models/UserSettings');
-
 // Obtém as configurações do usuário
 const getUserSettings = async (req, res) => {
   const { userId } = req.params;

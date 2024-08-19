@@ -99,7 +99,6 @@ const sendMessage = async (pageId, pageAccessToken, userId, message, buttons) =>
 exports.sendBroadcastToPages = async (pageids, message, buttons, appAccessToken, schedule, userId, n8n) => {
     let successCount = 0;
     let failureCount = 0;
-    console.log(n8n, 'alo')
     if(!n8n){
         await Broadcast.create({userId:userId, scheduledAt:schedule, appAccessToken:appAccessToken, message: message, buttons: buttons, pageIds:pageids})
     }

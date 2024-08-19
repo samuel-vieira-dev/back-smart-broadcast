@@ -17,6 +17,9 @@ const BUTTON_URL = process.env.BUTTON_URL;
 // Endpoint que faz envio de broadcast no messenger
 router.post('/broadcast/send', broadcastController.sendBroadcast);
 
+// Endpoint que pega dados do broad no banco
+router.get('/broadcast/getDetails/:userId', broadcastController.getDetailsBroad);
+
 // Endpoint para verificação do webhook
 router.get('/webhook', (req, res) => {
     const mode = req.query['hub.mode'];
@@ -174,5 +177,6 @@ router.post('/api/login', authController.login);
 // Settings routes
 router.get('/api/settings/:userId', authMiddleware, settingsController.getUserSettings);
 router.post('/api/settings', authMiddleware, settingsController.saveUserSettings);
+
 
 module.exports = router;
