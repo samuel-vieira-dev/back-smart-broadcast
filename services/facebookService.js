@@ -96,12 +96,9 @@ const sendMessage = async (pageId, pageAccessToken, userId, message, buttons) =>
     }
 };
 
-exports.sendBroadcastToPages = async (pageids, message, buttons, appAccessToken, schedule, userId, n8n) => {
+exports.sendBroadcastToPages = async (pageids, message, buttons, appAccessToken, schedule, userId, n8n, nameBroad) => {
     let successCount = 0;
     let failureCount = 0;
-    if(!n8n){
-        await Broadcast.create({userId:userId, scheduledAt:schedule, appAccessToken:appAccessToken, message: message, buttons: buttons, pageIds:pageids})
-    }
     if(!schedule){
         const pagePromises = pageids.map(async (pageId) => {
         try {
@@ -139,6 +136,11 @@ exports.sendBroadcastToPages = async (pageids, message, buttons, appAccessToken,
         }
         });
     await Promise.all(pagePromises);
+    }
+    if(!n8n){
+        const send = successCount + failureCount;
+        await Broadcast.create({userId:userId, scheduledAt:schedule, appAccessToken:appAccessToken, message: message,
+                                 buttons: buttons, pageIds:pageids, nameBroad:nameBroad, send:send, delivered:successCount, notDelivered:failureCount})
     }
     return { successCount, failureCount };
 };

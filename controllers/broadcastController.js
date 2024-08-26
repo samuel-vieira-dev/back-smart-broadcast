@@ -3,7 +3,7 @@ const facebookService = require('../services/facebookService.js');
 const Broadcast = require('../models/Broadcast');
 
 const sendBroadcast = async (req, res) => {
-    const { pageids, message, buttons, schedule, userId, n8n} = req.body;
+    const { pageids, message, buttons, schedule, userId, n8n, nameBroad} = req.body;
     const appAccessToken = req.headers['app-access-token'];
 
     if (!appAccessToken) {
@@ -13,7 +13,7 @@ const sendBroadcast = async (req, res) => {
     try {
         // Adicionar a tarefa à fila
         await memoryQueue.add(async () => {
-            await facebookService.sendBroadcastToPages(pageids, message, buttons, appAccessToken, schedule, userId, n8n);
+            await facebookService.sendBroadcastToPages(pageids, message, buttons, appAccessToken, schedule, userId, n8n, nameBroad);
         });
 
         res.status(200).json({ success: true, message: 'Broadcast job added to the queue.' });
@@ -29,7 +29,8 @@ const getDetailsBroad = async (req, res) => {
         scheduledAt: { $ifNull: ["$scheduledAt", "$createdAt"] },
         _id: 1, 
         message: 1,
-        createdAt: 1
+        createdAt: 1,
+        nameBroad: 1,
       }).sort({ scheduledAt: -1 });
       if (!datailsBroads) {
         return res.status(404).json({ error: 'Settings not found' });
