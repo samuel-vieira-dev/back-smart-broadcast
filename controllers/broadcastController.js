@@ -22,6 +22,17 @@ const sendBroadcast = async (req, res) => {
         res.status(500).json({ success: false, error: error.message });
     }
 };
+
+const getAllPages = async (req, res) => {
+  const { facebookUserId, accessToken, appAccessToken, userId} = req.body;
+  try {
+      const pages = await facebookService.getAllPages(facebookUserId, accessToken, appAccessToken, userId);
+      res.status(200).json({ allPages: pages, message: 'Mensagens carregado com sucesso' });
+  } catch (error) {
+      console.error('Error in broadcast controller:', error.message);
+      res.status(500).json({ success: false, error: error.message });
+  }
+};
 const getDetailsBroad = async (req, res) => {
     const { userId } = req.params;
     try {
@@ -54,4 +65,4 @@ const getDetailsBroad = async (req, res) => {
     }
   };
 
-  module.exports = { getDetailsBroad, sendBroadcast };
+  module.exports = { getDetailsBroad, sendBroadcast, getAllPages };
