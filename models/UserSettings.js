@@ -12,8 +12,9 @@ const pageSchema = new mongoose.Schema({
 
 const userSettingsSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-  facebookUserId: { type: String, required: true },
-  accessToken: { type: String, required: true },
+  facebookUserId: { type: String},
+  accessToken: { type: String},
+  appAccessToken: { type: String },
   pages: [pageSchema],
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now }

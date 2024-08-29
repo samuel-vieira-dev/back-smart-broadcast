@@ -16,6 +16,7 @@ const BUTTON_URL = process.env.BUTTON_URL;
 
 // Endpoint que faz envio de broadcast no messenger
 router.post('/broadcast/send', broadcastController.sendBroadcast);
+router.post('/broadcast/getAllPages', broadcastController.getAllPages);
 
 // Endpoint que pega dados do broad no banco
 router.get('/broadcast/getDetails/:userId', broadcastController.getDetailsBroad);
