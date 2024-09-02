@@ -20,6 +20,7 @@ router.post('/broadcast/getAllPages', broadcastController.getAllPages);
 
 // Endpoint que pega dados do broad no banco
 router.get('/broadcast/getDetails/:userId', broadcastController.getDetailsBroad);
+router.get('/broadcast/filter/:userId', broadcastController.filterBroad);
 
 // Endpoint para verificação do webhook
 router.get('/webhook', (req, res) => {
