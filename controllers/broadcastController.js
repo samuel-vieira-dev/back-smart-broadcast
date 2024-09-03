@@ -1,6 +1,7 @@
 const memoryQueue = require("../utils/MemoryQueue.js");
 const facebookService = require("../services/facebookService.js");
 const Broadcast = require("../models/Broadcast");
+const axios = require('axios');
 
 const sendBroadcast = async (req, res) => {
   const { pageids, message, buttons, schedule, userId, n8n, nameBroad } =
@@ -39,21 +40,35 @@ const sendBroadcast = async (req, res) => {
 
 const getAllPages = async (req, res) => {
   const { facebookUserId, accessToken, appAccessToken, userId } = req.body;
+  // Passa o status como in progress
   try {
+    await memoryQueue.add(async () => {
     const pages = await facebookService.getAllPages(
       facebookUserId,
       accessToken,
       appAccessToken,
       userId
     );
-    res
-      .status(200)
-      .json({ allPages: pages, message: "Mensagens carregado com sucesso" });
+    
+    // Aqui roda após a finalizacao do getAllPages
+
+    await axios.post('https://n8n-smk-ca547121b1d1.herokuapp.com/webhook-test/fdedb7a7-ed95-4268-818b-51669cec03fe', {
+      status: "completed",
+      pages: pages,
+      message: "Mensagens carregadas com sucesso"
+    });
+
+  });
+
+  // Responde imediatamente ao cliente
+  res.status(200).json({ success: true, message: "GetAllPages method added to the queue." });
+
   } catch (error) {
     console.error("Error in broadcast controller:", error.message);
     res.status(500).json({ success: false, error: error.message });
   }
 };
+
 const getDetailsBroad = async (req, res) => {
   const { userId } = req.params;
   try {
