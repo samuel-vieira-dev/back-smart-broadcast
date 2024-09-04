@@ -13,6 +13,7 @@ const pageSchema = new mongoose.Schema({
 const userSettingsSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   facebookUserId: { type: String},
+  status: {type: Number},
   accessToken: { type: String},
   appAccessToken: { type: String },
   pages: [pageSchema],

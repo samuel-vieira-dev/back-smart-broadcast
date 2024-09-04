@@ -1,7 +1,7 @@
 const memoryQueue = require("../utils/MemoryQueue.js");
 const facebookService = require("../services/facebookService.js");
 const Broadcast = require("../models/Broadcast");
-const axios = require('axios');
+const UserSettings = require("../models/UserSettings");
 
 const sendBroadcast = async (req, res) => {
   const { pageids, message, buttons, schedule, userId, n8n, nameBroad } =
@@ -37,13 +37,32 @@ const sendBroadcast = async (req, res) => {
     res.status(500).json({ success: false, error: error.message });
   }
 };
-
+const saveUserSettings = async (facebookUserId, accessToken, appAccessToken, userId) =>{
+  let userSettings = await UserSettings.findOne({ userId });
+  if (userSettings) {
+    userSettings.facebookUserId = facebookUserId;
+    userSettings.accessToken = accessToken;
+    userSettings.appAccessToken = appAccessToken;
+    userSettings.status = 1;
+  } else {
+    userSettings = new UserSettings({
+      userId,
+      facebookUserId,
+      accessToken,
+      appAccessToken,
+      status:1
+    });
+  }
+  await userSettings.save();
+}
 const getAllPages = async (req, res) => {
   const { facebookUserId, accessToken, appAccessToken, userId } = req.body;
-  // Passa o status como in progress
+  // Passa o status como in progress, STATUS 0 = FINALIZADO/ STATUS 1 = EM PROGRESSO/ STATUS 2 = ERRO
+  await saveUserSettings(facebookUserId, accessToken, appAccessToken, userId)
+  let pages;
   try {
     await memoryQueue.add(async () => {
-    const pages = await facebookService.getAllPages(
+    pages = await facebookService.getAllPages(
       facebookUserId,
       accessToken,
       appAccessToken,
@@ -52,12 +71,13 @@ const getAllPages = async (req, res) => {
     
     // Aqui roda após a finalizacao do getAllPages
 
-    await axios.post('https://n8n-smk-ca547121b1d1.herokuapp.com/webhook-test/fdedb7a7-ed95-4268-818b-51669cec03fe', {
-      status: "completed",
-      pages: pages,
-      message: "Mensagens carregadas com sucesso"
-    });
+    let userSettings = await UserSettings.findOne({ userId });
 
+    if (userSettings) {
+      userSettings.pages = pages;
+      userSettings.status = 0;
+    }
+    await userSettings.save();
   });
 
   // Responde imediatamente ao cliente

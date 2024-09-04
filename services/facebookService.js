@@ -262,24 +262,15 @@ const getAllPages = async (
     const pages = allPages.filter(
       (page, index, self) => index === self.findIndex((p) => p.id === page.id)
     );
+    return pages;
+  } catch (error) {
     let userSettings = await UserSettings.findOne({ userId });
 
     if (userSettings) {
-      userSettings.pages = pages;
-      userSettings.facebookUserId = facebookUserId;
-      userSettings.accessToken = accessToken;
-    } else {
-      userSettings = new UserSettings({
-        userId,
-        facebookUserId,
-        accessToken,
-        pages,
-        appAccessToken,
-      });
+      userSettings.pages = [];
+      userSettings.status = 2;
     }
     await userSettings.save();
-    return pages;
-  } catch (error) {
     console.error(
       "Error fetching pages:",
       error.response ? error.response.data : error.message
