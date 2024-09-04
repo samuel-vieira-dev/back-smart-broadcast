@@ -5,6 +5,7 @@ class MemoryQueue {
     }
 
     async add(task) {
+        console.log('MÉTODO ADICIONADO EM BACKGROUND')
         this.queue.push(task);
         this.processQueue();
     }

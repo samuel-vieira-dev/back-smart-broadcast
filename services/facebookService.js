@@ -221,26 +221,16 @@ const sendBroadcastToPages = async (
 const fetchPagesWithToken = async (userId, token) => {
   let pages = [];
   let pagesUrl = `https://graph.facebook.com/v20.0/${userId}/accounts?access_token=${token}`;
-  // let requests = [];
 
   while (pagesUrl) {
     const response = await axios.get(pagesUrl, {});
     pages = pages.concat(response.data.data);
     pagesUrl = response.data.paging?.next || null;
   }
-  // while (pagesUrl) {
-  //   requests.push(axios.get(pagesUrl));
-  //   const response = await axios.get(pagesUrl);
-  //   pagesUrl = response.data.paging?.next || null;
-  // }
-
-  // const responses = await Promise.all(requests);
-  // responses.forEach((response) => {
-  //   pages = pages.concat(response.data.data);
-  // });
 
   return pages;
 };
+
 const getAllPages = async (
   facebookUserId,
   accessToken,
@@ -272,24 +262,15 @@ const getAllPages = async (
     const pages = allPages.filter(
       (page, index, self) => index === self.findIndex((p) => p.id === page.id)
     );
+    return pages;
+  } catch (error) {
     let userSettings = await UserSettings.findOne({ userId });
 
     if (userSettings) {
-      userSettings.pages = pages;
-      userSettings.facebookUserId = facebookUserId;
-      userSettings.accessToken = accessToken;
-    } else {
-      userSettings = new UserSettings({
-        userId,
-        facebookUserId,
-        accessToken,
-        pages,
-        appAccessToken,
-      });
+      userSettings.pages = [];
+      userSettings.status = 2;
     }
     await userSettings.save();
-    return pages;
-  } catch (error) {
     console.error(
       "Error fetching pages:",
       error.response ? error.response.data : error.message

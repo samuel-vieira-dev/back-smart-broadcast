@@ -34,5 +34,5 @@ app.listen(PORT, () => {
         } catch (error) {
           console.error('Error fetching broadcasts:', error);
         }
-      });
+    });
 });
