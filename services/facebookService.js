@@ -219,14 +219,19 @@ const sendBroadcastToPages = async (
 };
 
 const fetchPagesWithToken = async (userId, token) => {
+  console.log('entrou no fetchPagesWithToken')
   let pages = [];
   let pagesUrl = `https://graph.facebook.com/v20.0/${userId}/accounts?access_token=${token}`;
 
+  console.log('Começou o While')
   while (pagesUrl) {
+    console.log(`pagesUrl: ${pagesUrl}`)
     const response = await axios.get(pagesUrl, {});
     pages = pages.concat(response.data.data);
     pagesUrl = response.data.paging?.next || null;
   }
+  console.log('Finalizou o While')
+
 
   return pages;
 };
@@ -237,6 +242,7 @@ const getAllPages = async (
   appAccessToken,
   userId
 ) => {
+  console.log('Entrou no getAllPages')
   try {
     let allPages = [];
 
