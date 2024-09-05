@@ -219,20 +219,34 @@ const sendBroadcastToPages = async (
 };
 
 const fetchPagesWithToken = async (userId, token) => {
-  console.log('entrou no fetchPagesWithToken')
+  console.log('entrou no fetchPagesWithToken');
   let pages = [];
   let pagesUrl = `https://graph.facebook.com/v20.0/${userId}/accounts?access_token=${token}`;
 
-  console.log('Começou o While')
+  console.log('Começou o While');
+
+  const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
+
   while (pagesUrl) {
-    console.log(`pagesUrl: ${pagesUrl}`)
-    const response = await axios.get(pagesUrl, {});
-    pages = pages.concat(response.data.data);
-    pagesUrl = response.data.paging?.next || null;
+    console.log(`pagesUrl: ${pagesUrl}`);
+    
+    try {
+      const response = await axios.get(pagesUrl, {});
+      pages = pages.concat(response.data.data);
+      pagesUrl = response.data.paging?.next || null;
+
+      if (pagesUrl) {
+        console.log('Aguardando 5 segundos antes da próxima requisição...');
+        await delay(5000);
+      }
+      
+    } catch (error) {
+      console.error('Erro ao buscar páginas:', error);
+      pagesUrl = null;
+    }
   }
-  console.log('Finalizou o While')
-
-
+  
+  console.log('Finalizou o While');
   return pages;
 };
 
