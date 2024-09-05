@@ -242,7 +242,7 @@ const fetchPagesWithToken = async (userId, token) => {
       
     } catch (error) {
       console.error('Erro ao buscar páginas:', error);
-      pagesUrl = null;
+      return pages;
     }
   }
   
