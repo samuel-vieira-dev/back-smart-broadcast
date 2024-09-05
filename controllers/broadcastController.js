@@ -58,7 +58,10 @@ const saveUserSettings = async (facebookUserId, accessToken, appAccessToken, use
 const getAllPages = async (req, res) => {
   const { facebookUserId, accessToken, appAccessToken, userId } = req.body;
   // Passa o status como in progress, STATUS 0 = FINALIZADO/ STATUS 1 = EM PROGRESSO/ STATUS 2 = ERRO
+
   await saveUserSettings(facebookUserId, accessToken, appAccessToken, userId)
+  console.log('Informações salvadas no userUsettings com o status 1')
+
   let pages;
   try {
     await memoryQueue.add(async () => {
@@ -72,12 +75,14 @@ const getAllPages = async (req, res) => {
     // Aqui roda após a finalizacao do getAllPages
 
     let userSettings = await UserSettings.findOne({ userId });
+    console.log(`userSettings: ${userSettings}`)
 
     if (userSettings) {
       userSettings.pages = pages;
       userSettings.status = 0;
     }
     await userSettings.save();
+    console.log('Informações salvadas no userUsettings com o status 0')
   });
 
   // Responde imediatamente ao cliente
