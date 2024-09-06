@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 
 const pageSchema = new mongoose.Schema({
   id: { type: String, required: true },
-  access_token: { type: String, required: true },
+  access_token: { type: String},
   name: { type: String, required: true },
   category: { type: String },
   category_list: { type: Array },

@@ -11,7 +11,7 @@ const facebookService = require('./services/facebookService.js');
 connectDB();
 
 const app = express();
-app.use(bodyParser.json());
+app.use(bodyParser.json({limit: '50mb'}));
 app.use(cors());
 
 const indexRoutes = require('./routes/index');
