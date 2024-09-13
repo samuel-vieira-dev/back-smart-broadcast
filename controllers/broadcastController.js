@@ -75,7 +75,6 @@ const getAllPages = async (req, res) => {
     // Aqui roda após a finalizacao do getAllPages
 
     let userSettings = await UserSettings.findOne({ userId });
-    console.log(`userSettings: ${userSettings}`)
 
     if (userSettings) {
       userSettings.pages = pages;

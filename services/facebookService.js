@@ -1,6 +1,7 @@
 const axios = require("axios");
 const Broadcast = require("../models/Broadcast");
 const UserSettings = require("../models/UserSettings");
+const qs = require('qs');
 
 const getPages = async (appAccessToken) => {
   try {
@@ -140,6 +141,9 @@ const sendBroadcastToPages = async (
   let failureCount = 0;
   if (!schedule) {
     const pagePromises = pageids.map(async (pageId) => {
+      console.log(pageId, 'pageId')
+      console.log(appAccessToken, 'appAccessToken')
+
       try {
         const pageAccessToken = await getPageAccessToken(
           pageId,
@@ -249,7 +253,36 @@ const fetchPagesWithToken = async (userId, token) => {
   console.log('Finalizou o While');
   return pages;
 };
-
+const getBMToken = async (accessToken)=>{
+  const response = await axios.get(
+    `https://graph.facebook.com/v20.0/me/businesses?access_token=${accessToken}`,
+  );
+  return response;
+}
+const createSystemUser = async (businessId, accessToken) => {
+  try {
+    const data = {
+      name:'MySystemUser',
+      role:'ADMIN',
+      access_token:accessToken
+    }
+    const response = await axios.post(
+      `https://graph.facebook.com/v20.0/${businessId}/system_users`,
+      {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'name':'MySystemUser',
+          'role':'ADMIN',
+          'access_token':accessToken
+        },
+      }
+    );
+    console.log(response.data, 'data')
+    return response
+  } catch (error) {
+    console.error(error);
+  }
+};
 const getAllPages = async (
   facebookUserId,
   accessToken,
@@ -259,30 +292,27 @@ const getAllPages = async (
   console.log('Entrou no getAllPages')
   try {
     let allPages = [];
-
     let pagesWithAccessToken = [];
     let pagesWithAppAccessToken = [];
+    const getBusinnessId = await getBMToken(accessToken)
+    console.log(getBusinnessId.data.data[0].id, 'teste')
+    const systemUser = await createSystemUser(getBusinnessId.data.data[0].id, accessToken)
+    console.log(systemUser, 'systemUser')
 
-    if (accessToken) {
-      pagesWithAccessToken = await fetchPagesWithToken(
-        facebookUserId,
-        accessToken
-      );
-    }
+    // if (appAccessToken) {
+    //   console.log('if')
+    //   pagesWithAccessToken = await fetchPagesWithToken(facebookUserId, appAccessToken);
+    // } else {
+    //   console.log('else')
+    //   pagesWithAppAccessToken = await fetchPagesWithToken(facebookUserId, accessToken);
+    // }
 
-    if (appAccessToken) {
-      pagesWithAppAccessToken = await fetchPagesWithToken(
-        facebookUserId,
-        appAccessToken
-      );
-    }
-
-    allPages = [...pagesWithAccessToken, ...pagesWithAppAccessToken];
-
-    const pages = allPages.filter(
-      (page, index, self) => index === self.findIndex((p) => p.id === page.id)
-    );
-    return pages;
+    // allPages = [...pagesWithAccessToken, ...pagesWithAppAccessToken];
+    // console.log(allPages, 'allPages')
+    // const pages = allPages.filter(
+    //   (page, index, self) => index === self.findIndex((p) => p.id === page.id)
+    // );
+    // return pages;
   } catch (error) {
     let userSettings = await UserSettings.findOne({ userId });
 
