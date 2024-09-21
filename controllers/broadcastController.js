@@ -4,7 +4,7 @@ const Broadcast = require("../models/Broadcast");
 const UserSettings = require("../models/UserSettings");
 
 const sendBroadcast = async (req, res) => {
-  const { pageids, message, buttons, schedule, userId, n8n, nameBroad } =
+  const { pageids, message, buttons, schedule, userId, n8n, nameBroad, firstBroad, status } =
     req.body;
   const appAccessToken = req.headers["app-access-token"];
 
@@ -25,7 +25,9 @@ const sendBroadcast = async (req, res) => {
         schedule,
         userId,
         n8n,
-        nameBroad
+        nameBroad,
+        firstBroad,
+        status
       );
     });
 
@@ -57,7 +59,6 @@ const saveUserSettings = async (facebookUserId, accessToken, appAccessToken, use
 }
 const getAllPages = async (req, res) => {
   const { facebookUserId, accessToken, appAccessToken, userId } = req.body;
-  // Passa o status como in progress, STATUS 0 = FINALIZADO/ STATUS 1 = EM PROGRESSO/ STATUS 2 = ERRO
 
   await saveUserSettings(facebookUserId, accessToken, appAccessToken, userId)
   console.log('Informações salvadas no userUsettings com o status 1')
@@ -159,4 +160,4 @@ const filterBroad = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
-module.exports = { getDetailsBroad, sendBroadcast, getAllPages, filterBroad };
+module.exports = { getDetailsBroad, sendBroadcast, getAllPages, filterBroad, saveUserSettings };

@@ -3,7 +3,6 @@ const UserSettings = require("../models/UserSettings");
 // Obtém as configurações do usuário
 const getUserSettings = async (req, res) => {
   const { userId } = req.params;
-
   try {
     const settings = await UserSettings.findOne({ userId }).populate(
       "userId",
@@ -21,7 +20,7 @@ const getUserSettings = async (req, res) => {
 
 // Salva as configurações do usuário
 const saveUserSettings = async (req, res) => {
-  const { facebookUserId, accessToken, pages, userId, appAccessToken } =
+  const { facebookUserId, accessToken, pages, userId, appAccessToken} =
     req.body;
 
   try {
@@ -39,6 +38,12 @@ const saveUserSettings = async (req, res) => {
       if (appAccessToken !== null && appAccessToken !== undefined) {
         settings.appAccessToken = appAccessToken;
       }
+      // if (firstMessage !== null && firstMessage !== undefined) {
+      //   settings.firstMessage = firstMessage;
+      // }
+      // if (buttons !== null && buttons !== undefined) {
+      //   settings.buttons = buttons;
+      // }
     } else {
       // Cria novas configurações
       settings = new UserSettings({

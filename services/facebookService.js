@@ -134,11 +134,13 @@ const sendBroadcastToPages = async (
   schedule,
   userId,
   n8n,
-  nameBroad
+  nameBroad,
+  firstBroad,
+  status
 ) => {
   let successCount = 0;
   let failureCount = 0;
-  if (!schedule) {
+  if (!schedule || (firstBroad || status == 'ACTIVE')) {
     const pagePromises = pageids.map(async (pageId) => {
       try {
         const pageAccessToken = await getPageAccessToken(
@@ -199,6 +201,9 @@ const sendBroadcastToPages = async (
       }
     });
     await Promise.all(pagePromises);
+  }
+  else{
+    throw new Error("Not Allowed");
   }
   if (!n8n) {
     const send = successCount + failureCount;
