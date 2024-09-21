@@ -1,6 +1,12 @@
 // models/UserSettings.js
 const mongoose = require('mongoose');
 
+// const buttonSchema = new mongoose.Schema({
+//   type: { type: String},
+//   url: { type: String },
+//   title: { type: String }
+// }, { _id: false });
+
 const pageSchema = new mongoose.Schema({
   id: { type: String, required: true },
   access_token: { type: String},
@@ -13,9 +19,13 @@ const pageSchema = new mongoose.Schema({
 const userSettingsSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   facebookUserId: { type: String},
-  status: {type: Number},
+  custumerId: {type: String},
+  status: {type: String},
   accessToken: { type: String},
   appAccessToken: { type: String },
+  firstBroad: {type: Boolean},
+  // firstMessage: { type: String },
+  // buttons: [buttonSchema],
   pages: [pageSchema],
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now }

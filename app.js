@@ -6,6 +6,7 @@ const connectDB = require('./config/db');
 const cron = require('node-cron');
 const Broadcast = require('./models/Broadcast');
 const facebookService = require('./services/facebookService.js');
+const UserSettings = require("./models/UserSettings.js");
 
 // Conectar ao MongoDB
 connectDB();
@@ -29,7 +30,10 @@ app.listen(PORT, () => {
             scheduledAt: startOfMinute
           });
           broadcasts?.map(async (broad)=>{
-            await facebookService.sendBroadcastToPages(broad.pageIds, broad.message, broad.buttons, broad.appAccessToken, null, broad.userId, true);
+            const userSettings = UserSettings.findOne({
+              userId:broad.userId
+            })
+            await facebookService.sendBroadcastToPages(broad.pageIds, broad.message, broad.buttons, broad.appAccessToken, null, broad.userId, true, userSettings.firstBroad, userSettings.status);
           })
         } catch (error) {
           console.error('Error fetching broadcasts:', error);

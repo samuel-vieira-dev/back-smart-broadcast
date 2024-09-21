@@ -9,9 +9,9 @@ const broadcastQueue = new Queue('broadcast', {
 });
 
 broadcastQueue.process(async (job, done) => {
-  const { pageIds, message, buttons, appAccessToken, schedule, userId, n8n} = job.data;
+  const { pageIds, message, buttons, appAccessToken, schedule, userId, n8n, firstBroad, status} = job.data;
   try {
-    const { successCount, failureCount } = await facebookService.sendBroadcastToPages(pageIds, message, buttons, appAccessToken, schedule, userId, n8n);
+    const { successCount, failureCount } = await facebookService.sendBroadcastToPages(pageIds, message, buttons, appAccessToken, schedule, userId, n8n, firstBroad, status);
     done(null, { successCount, failureCount });
   } catch (error) {
     done(error);
