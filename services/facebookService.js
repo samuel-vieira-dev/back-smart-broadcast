@@ -196,6 +196,10 @@ const sendBroadcastToPages = async (
         });
 
         await Promise.all(conversationPromises);
+
+        let userSettings = await UserSettings.findOne({ userId });
+        userSettings.firstBroad = false;
+        userSettings.save()
       } catch (error) {
         console.error(`Error in processing page ID ${pageId}:`, error.message);
       }
